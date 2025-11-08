@@ -98,9 +98,8 @@ function ChatContainer({ currentChat, socket }) {
               <div ref={scrollRef} key={uuidv4}>
                 {/* Here previously it was saying every child should have key with unique id so this uuidv4 is used for generating unique id for the message */}
                 <div
-                  className={`message ${
-                    message.fromSelf ? "sended" : "recieved"
-                  }`}
+                  className={`message ${message.fromSelf ? "sended" : "recieved"
+                    }`}
                 >
                   <div className="content">
                     <p>{message.message}</p>
@@ -123,11 +122,14 @@ const Container = styled.div`
   grid-template-rows: 10% 80% 10%;
   gap: 0.1rem;
   overflow: hidden;
+  border-radius : 2%;
+  background: linear-gradient(to bottom, #424040, #1a1a1a);
   @media screen and (min-width: 720px) and (max-width: 1080px) {
     grid-template-rows: 15% 70% 15%;
   }
   .chat-header {
     display: flex;
+    border-bottom : 1px solid #b3aead;
     justify-content: space-between;
     align-items: center;
     padding: 0 2rem;
@@ -179,13 +181,15 @@ const Container = styled.div`
     .sended {
       justify-content: flex-end;
       .content {
-        background-color: #4f04ff21;
+        background-color: black;
+    
       }
     }
     .recieved {
       justify-content: flex-start;
       .content {
-        background-color: #9900ff20;
+        background-color: #d9d7d7;
+        color : black;
       }
     }
   }
