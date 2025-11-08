@@ -1,24 +1,21 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 import { toji, gojo, sukuna, meimei, genjaku } from "../assets/index";
-
-import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import axios from "axios";
 import { setAvatarRoute } from "../utils/ApiRoutes";
 
 function SetAvatar() {
   const navigate = useNavigate();
   const avatars = [toji, gojo, sukuna, meimei, genjaku];
-
   const [selectedAvatar, setSelectedAvatar] = useState(undefined);
+
   const toastOptions = {
     position: "top-right",
-    autoClost: 8000,
+    autoClose: 8000,
     pauseOnHover: true,
     draggable: true,
     theme: "dark",
@@ -26,118 +23,141 @@ function SetAvatar() {
 
   useEffect(() => {
     if (!localStorage.getItem("chat-app-user")) {
-      navigate("/login ");
+      navigate("/login");
     }
-  });
+  }, [navigate]);
 
   const setProfilePicture = async () => {
+    if (selectedAvatar === undefined) {
+      toast.error("Please select an avatar", toastOptions);
+      return;
+    }
     try {
-      if (selectedAvatar === undefined) {
-        toast.error("Please Select an Avatar", toastOptions);
-      } else {
-        const user = await JSON.parse(localStorage.getItem("chat-app-user"));
+      const user = JSON.parse(localStorage.getItem("chat-app-user"));
+      const { data } = await axios.post(`${setAvatarRoute}/${user._id}`, {
+        image: avatars[selectedAvatar],
+      });
 
-        const { data } = await axios.post(`${setAvatarRoute}/${user._id}`, {
-          image: avatars[selectedAvatar],
-        });
-        user.isAvatarImageSet = true;
-        user.avatarImage = avatars[selectedAvatar]; // here "user.avatarImage = data.image" was used but due to late data recieving or like only through second rendering the "data.image" value exist ;
-        localStorage.setItem("chat-app-user", JSON.stringify(user));
-        navigate("/");
-      }
+      user.isAvatarImageSet = true;
+      user.avatarImage = avatars[selectedAvatar];
+      localStorage.setItem("chat-app-user", JSON.stringify(user));
+      navigate("/");
     } catch (err) {
-      toast.error("An error occured while setting the avatar", toastOptions);
+      toast.error("An error occurred while setting the avatar", toastOptions);
     }
   };
 
   return (
-    <>
-      <Container>
-        <div className="title-container">
-          <h1>Pick an avatar</h1>
-        </div>
-        <div className="avatars">
-          {avatars.map((avatar, index) => {
-            return (
-              <div
-                key={index}
-                className={`avatar ${
-                  selectedAvatar === index ? "selected" : ""
-                }`}
-              >
-                <img
-                  src={avatar}
-                  alt="avatar"
-                  onClick={() => setSelectedAvatar(index)}
-                />
-              </div>
-            );
-          })}
-        </div>
-        <button className="submit-btn" onClick={setProfilePicture}>
-          Select
-        </button>
-      </Container>
-
+    <Container>
+      <div className="title-container">
+        <h1>Pick an avatar</h1>
+      </div>
+      <div className="avatars">
+        {avatars.map((avatar, index) => (
+          <div
+            key={index}
+            className={`avatar ${selectedAvatar === index ? "selected" : ""}`}
+            onClick={() => setSelectedAvatar(index)}
+          >
+            <img src={avatar} alt="avatar" />
+          </div>
+        ))}
+      </div>
+      <button className="submit-btn" onClick={setProfilePicture}>
+        Select
+      </button>
       <ToastContainer />
-    </>
+    </Container>
   );
 }
+
+export default SetAvatar;
+
+// Animations
+const float = keyframes`
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+`;
+
+const fadeIn = keyframes`
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+`;
+
 const Container = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
   gap: 2rem;
-  background-color: #131324;
   height: 100vh;
   width: 100vw;
+  background-color: #131324;
+  animation: ${fadeIn} 0.8s ease forwards;
 
-  .loader {
-    max-inline-size: 100%;
+  .title-container h1 {
+    color: white;
+    text-align: center;
   }
 
-  .title-container {
-    h1 {
-      color: white;
-    }
-  }
   .avatars {
     display: flex;
     gap: 2rem;
 
     .avatar {
       border: 0.4rem solid transparent;
-      padding: 0.7rem;
-      border-radius: 5rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: 0.4s ease-in-out;
+      border-radius: 50%;
+      padding: 0.5rem;
+      transition: all 0.4s ease-in-out;
+      cursor: pointer;
+      animation: ${float} 4s ease-in-out infinite;
+
       img {
         height: 6rem;
+        border-radius: 50%;
+        transition: transform 0.3s ease-in-out;
+      }
+
+      &:hover img {
+        transform: scale(1.1);
       }
     }
+
     .selected {
-      border: 0.4rem solid green;
+      border: 0.4rem solid #4e0eff; // accent color
+      box-shadow: 0 0 20px #4e0eff;
+      transform: scale(1.1);
     }
   }
+
   .submit-btn {
     font-weight: bold;
     font-family: "Courier New", Courier, monospace;
     font-size: 1rem;
-    padding: 10px;
+    padding: 10px 30px;
     cursor: pointer;
     border: none;
     border-radius: 4rem;
-
+    background-color: #4e0eff;
+    color: white;
     text-transform: uppercase;
-    transition: 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
 
     &:hover {
-      background-color: black;
-      color: white;
+      background-color: #3a00c4;
+      transform: scale(1.05);
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .avatars {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+
+      .avatar img {
+        height: 4.5rem;
+      }
     }
   }
 `;
-export default SetAvatar;

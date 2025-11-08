@@ -1,11 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import Logo from "../assets/logo.png";
-import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import axios from "axios";
 import { loginRoute } from "../utils/ApiRoutes";
 
@@ -18,7 +16,7 @@ function Login() {
 
   const toastOptions = {
     position: "top-right",
-    autoClost: 8000,
+    autoClose: 5000,
     pauseOnHover: true,
     draggable: true,
     theme: "dark",
@@ -26,17 +24,16 @@ function Login() {
 
   useEffect(() => {
     if (localStorage.getItem("chat-app-user")) navigate("/");
-  }, []);
+  }, [navigate]);
+
   const handleValidation = () => {
     const { password, username } = values;
 
-    if (username.length === "") {
-      toast.error("Username required.", toastOptions);
-      console.log("useername");
+    if (!username) {
+      toast.error("Username is required.", toastOptions);
       return false;
-    } else if (password.length === "") {
-      toast.error("Password required.", toastOptions);
-      console.log("PASS length");
+    } else if (!password) {
+      toast.error("Password is required.", toastOptions);
       return false;
     }
     return true;
@@ -46,31 +43,27 @@ function Login() {
     event.preventDefault();
     if (handleValidation()) {
       const { username, password } = values;
-      const { data } = await axios.post(loginRoute, {
-        username,
-        password,
-      });
+      const { data } = await axios.post(loginRoute, { username, password });
 
-      if (data.status === false) toast.error(data.msg, toastOptions);
+      if (!data.status) toast.error(data.msg, toastOptions);
 
-      if (data.status === true) {
+      if (data.status) {
         localStorage.setItem("chat-app-user", JSON.stringify(data.user));
-
         navigate("/");
       }
     }
   };
-  function handleChange(event) {
+
+  const handleChange = (event) => {
     setValues({ ...values, [event.target.name]: event.target.value });
-  }
+  };
 
   return (
     <>
       <FormContainer>
-        <form onSubmit={(event) => handleSubmit(event)}>
+        <form onSubmit={handleSubmit}>
           <div className="brand">
             <img src={Logo} alt="logo" />
-
             <h1>Hellow!</h1>
           </div>
 
@@ -79,20 +72,19 @@ function Login() {
             placeholder="Username"
             name="username"
             onChange={handleChange}
-            min="3"
+            required
           />
-
           <input
             type="password"
             placeholder="Password"
             name="password"
             onChange={handleChange}
-            min="8"
+            required
           />
 
           <button type="submit">Login</button>
           <span>
-            Don't Have an Account? <Link to="/register">Register It</Link>
+            Don't have an account? <Link to="/register">Register It</Link>
           </span>
         </form>
       </FormContainer>
@@ -101,87 +93,113 @@ function Login() {
   );
 }
 
+// Floating animation
+const float = keyframes`
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+`;
+
 const FormContainer = styled.div`
   height: 100vh;
-  width: 100 vh;
+  width: 100vw;
   display: flex;
-  flex-direction: column-reverse;
   justify-content: center;
-  gap: 1rem;
   align-items: center;
-  background-color: gray;
+  background: linear-gradient(145deg, #0f0c29, #302b63, #24243e);
 
   .brand {
     display: flex;
     align-items: center;
     gap: 1rem;
     justify-content: center;
+    margin-bottom: 2rem;
+    animation: ${float} 6s ease-in-out infinite;
 
     img {
-      height: 5rem;
+      height: 4rem;
+      animation: ${float} 4s ease-in-out infinite;
     }
+
     h1 {
-      color: white;
-      text-transform: uppercase;
+      color: #e0e0e0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      letter-spacing: 2px;
     }
   }
 
   form {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-    background-color: #00000076;
-    border-radius: 3rem;
-    padding: 1rem 4rem;
-    height: 550px;
-  }
-  input {
-    padding: 9px;
+    gap: 1.5rem;
+    background: rgba(30, 30, 40, 0.95);
+    border-radius: 1.5rem;
+    padding: 2.5rem 3rem;
+    width: 400px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+    transition: all 0.3s ease;
+    animation: ${float} 8s ease-in-out infinite;
 
-    font-weight: bold;
-    background-color: transparent;
-    color: white;
-    border: 0.1rem solid #ce353a;
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+    }
+  }
+
+  input {
+    padding: 12px;
+    font-weight: 500;
+    font-size: 1rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #f0f0f0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+    transition: all 0.3s ease;
 
     &:focus {
-      border: 0.2rem solid #ce353a;
+      border-color: #6c63ff;
+      box-shadow: 0 0 10px #6c63ff33;
       outline: none;
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    &::placeholder {
+      color: #aaa;
     }
   }
 
   button {
-    width: 50%;
-    margin-left: 20%;
+    padding: 12px;
     font-weight: bold;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 1rem;
-    padding: 10px;
+    font-size: 1.1rem;
     cursor: pointer;
     border: none;
-    border-radius: 4rem;
-
+    border-radius: 2rem;
+    background: #6c63ff;
+    color: #fff;
     text-transform: uppercase;
-    transition: 0.4s ease-in-out;
+    transition: all 0.3s ease;
 
     &:hover {
-      background-color: black;
-      color: white;
+      background: #574fd6;
+      transform: scale(1.05);
     }
   }
+
   span {
-    color: white;
-    text-transform: uppercase;
+    color: #ccc;
+    text-align: center;
 
     a {
-      color: red;
-      text-transform: none;
+      color: #6c63ff;
       font-weight: bold;
-      font-family: Arial, Helvetica, sans-serif;
-      margin: 10px;
+      margin-left: 0.3rem;
+      transition: color 0.3s ease;
+
       &:hover {
-        color: #4e0eff;
+        color: #9a8fff;
       }
     }
   }
 `;
+
 export default Login;

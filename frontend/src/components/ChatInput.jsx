@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import Picker from "emoji-picker-react";
 import { IoMdSend } from "react-icons/io";
 import { BsEmojiSmileFill } from "react-icons/bs";
@@ -13,9 +13,7 @@ const ChatInput = ({ handleSendMsg }) => {
   };
 
   const handleEmojiClick = (emojiObject) => {
-    let message = msg;
-    message += emojiObject.emoji;
-    setMsg(message);
+    setMsg((prevMsg) => prevMsg + emojiObject.emoji);
   };
 
   const sendChat = (event) => {
@@ -29,22 +27,27 @@ const ChatInput = ({ handleSendMsg }) => {
   return (
     <Container>
       <div className="button-container">
-        <div className="emoji">
-          <BsEmojiSmileFill onClick={handleEmojiPickerHideShow} />
-          {
-            showEmojiPicker && <Picker onEmojiClick={handleEmojiClick} /> //Here <Picker> is a custom component and onEmojiClick is its own prop
-          }
+        <div className="emoji-container">
+          <BsEmojiSmileFill
+            className={`emoji-icon ${showEmojiPicker ? "active" : ""}`}
+            onClick={handleEmojiPickerHideShow}
+          />
+          {showEmojiPicker && (
+            <EmojiPickerWrapper>
+              <Picker onEmojiClick={handleEmojiClick} />
+            </EmojiPickerWrapper>
+          )}
         </div>
       </div>
 
-      <form className="input-container" onSubmit={(e) => sendChat(e)}>
+      <form className="input-container" onSubmit={sendChat}>
         <input
           type="text"
-          placeholder="Enter your message"
+          placeholder="Type your message..."
           value={msg}
           onChange={(e) => setMsg(e.target.value)}
         />
-        <button className="submit">
+        <button type="submit" className="send-btn">
           <IoMdSend />
         </button>
       </form>
@@ -54,95 +57,149 @@ const ChatInput = ({ handleSendMsg }) => {
 
 export default ChatInput;
 
+// Animation for emoji picker
+const slideUpScale = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+`;
+
+const EmojiPickerWrapper = styled.div`
+  position: absolute;
+  bottom: 60px; /* adjust so it appears above emoji button */
+  left: 0;
+  z-index: 1000;
+  animation: ${slideUpScale} 0.3s ease forwards;
+
+  .emoji-picker-react {
+    background-color: #131324 !important;
+    border: 1px solid #9a86f3 !important;
+    border-radius: 1rem !important;
+    box-shadow: 0 5px 20px #9a86f3aa !important;
+
+    .emoji-scroll-wrapper::-webkit-scrollbar {
+      width: 5px;
+      &-thumb {
+        background-color: #9a86f3;
+        border-radius: 10px;
+      }
+    }
+
+    .emoji-search {
+      background-color: #080420 !important;
+      border-color: #9a86f3 !important;
+      color: white !important;
+    }
+
+    .emoji-categories button {
+      filter: contrast(1) !important;
+    }
+
+    .emoji-group:before {
+      background-color: #080420 !important;
+    }
+  }
+`;
+
 const Container = styled.div`
   display: grid;
-  align-items: center;
   grid-template-columns: 5% 95%;
-  background-color: #080420;
+  align-items: center;
   padding: 0 2rem;
-  @media screen and (min-width: 720px) and (max-width: 1080px) {
-    padding: 0 1rem;
-    gap: 1rem;
-  }
+  background-color: #080420;
+  position: relative;
+
   .button-container {
     display: flex;
     align-items: center;
-    color: white;
-    gap: 1rem;
-    .emoji {
+    justify-content: center;
+
+    .emoji-container {
       position: relative;
-      svg {
-        font-size: 1.5rem;
+
+      .emoji-icon {
+        font-size: 1.8rem;
         color: #ffff00c8;
         cursor: pointer;
+        transition: transform 0.3s ease, color 0.3s ease;
       }
-      .emoji-picker-react {
-        position: absolute;
-        top: -350px;
-        background-color: #080420;
-        box-shadow: 0 5px 10px #9a86f3;
-        border-color: #9a86f3;
-        .emoji-scroll-wrapper::-webkit-scrollbar {
-          background-color: #080420;
-          width: 5px;
-          &-thumb {
-            background-color: #9a86f3;
-          }
-        }
-        .emoji-categories {
-          button {
-            filter: contrast(0);
-          }
-        }
-        .emoji-search {
-          background-color: transparent;
-          border-color: #9a86f3;
-        }
-        .emoji-group:before {
-          background-color: #080420;
-        }
+
+      .emoji-icon:hover {
+        transform: scale(1.2) rotate(10deg);
+        color: #ffd700;
+      }
+
+      .emoji-icon.active {
+        transform: rotate(20deg) scale(1.2);
+        color: #ffea00;
       }
     }
   }
+
   .input-container {
-    width: 100%;
-    border-radius: 2rem;
     display: flex;
     align-items: center;
-    gap: 2rem;
-    background-color: #ffffff34;
+    gap: 1rem;
+    width: 100%;
+    background-color: #1e1b4d;
+    border-radius: 2rem;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 0 10px #9a86f3;
+
     input {
-      width: 90%;
-      height: 60%;
-      background-color: transparent;
-      color: white;
+      width: 100%;
+      background: transparent;
       border: none;
-      padding-left: 1rem;
-      font-size: 1.2rem;
+      color: white;
+      font-size: 1rem;
+      outline: none;
+      &::placeholder {
+        color: #d1d1d1;
+      }
       &::selection {
         background-color: #9a86f3;
       }
-      &:focus {
-        outline: none;
-      }
     }
-    button {
-      padding: 0.3rem 2rem;
-      border-radius: 2rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+
+    .send-btn {
       background-color: #9a86f3;
       border: none;
-      @media screen and (min-width: 720px) and (max-width: 1080px) {
-        padding: 0.3rem 1rem;
-        svg {
-          font-size: 1rem;
-        }
-      }
+      border-radius: 50%;
+      padding: 0.5rem 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+
       svg {
-        font-size: 2rem;
+        font-size: 1.5rem;
         color: white;
+      }
+
+      &:hover {
+        transform: scale(1.2);
+        box-shadow: 0 0 10px #9a86f3;
+      }
+    }
+  }
+
+  @media screen and (min-width: 720px) and (max-width: 1080px) {
+    padding: 0 1rem;
+
+    .input-container {
+      gap: 0.5rem;
+
+      .send-btn {
+        padding: 0.4rem 0.5rem;
+        svg {
+          font-size: 1.2rem;
+        }
       }
     }
   }
