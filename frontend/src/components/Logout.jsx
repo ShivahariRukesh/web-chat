@@ -15,7 +15,7 @@ function Logout() {
   return (
     <Button onClick={handleClick}>
       {/* here maybe  inside of  <BiPowerOff /> component there is a tag called button so maybe styling in here is fluently working */}
-      <BiPowerOff />
+      <BiPowerOff color="white" />
     </Button>
   );
 }
@@ -28,7 +28,7 @@ const Button = styled.button`
   align-items: center;
   padding: 0.5rem;
   border-radius: 0.5rem;
-  background-color: #9a86f3;
+  background-color: black;
   border: none;
   cursor: pointer;
   svg {

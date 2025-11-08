@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import Picker from "emoji-picker-react";
-import { IoMdSend } from "react-icons/io";
 import { BsEmojiSmileFill } from "react-icons/bs";
 
 const ChatInput = ({ handleSendMsg }) => {
@@ -29,6 +28,7 @@ const ChatInput = ({ handleSendMsg }) => {
       <div className="button-container">
         <div className="emoji-container">
           <BsEmojiSmileFill
+            color="black"
             className={`emoji-icon ${showEmojiPicker ? "active" : ""}`}
             onClick={handleEmojiPickerHideShow}
           />
@@ -48,7 +48,7 @@ const ChatInput = ({ handleSendMsg }) => {
           onChange={(e) => setMsg(e.target.value)}
         />
         <button type="submit" className="send-btn">
-          <IoMdSend />
+          Send
         </button>
       </form>
     </Container>
@@ -111,7 +111,7 @@ const Container = styled.div`
   grid-template-columns: 5% 95%;
   align-items: center;
   padding: 0 2rem;
-  background-color: #080420;
+  background-color: #616060;
   position: relative;
 
   .button-container {
@@ -146,10 +146,10 @@ const Container = styled.div`
     align-items: center;
     gap: 1rem;
     width: 100%;
-    background-color: #1e1b4d;
+    background-color: #403f3f;
     border-radius: 2rem;
     padding: 0.5rem 1rem;
-    box-shadow: 0 0 10px #9a86f3;
+    box-shadow: 0 0 10px white;
 
     input {
       width: 100%;
@@ -167,9 +167,9 @@ const Container = styled.div`
     }
 
     .send-btn {
-      background-color: #9a86f3;
+      background-color:#f0f0f0;
       border: none;
-      border-radius: 50%;
+      border-radius: 25%;
       padding: 0.5rem 0.6rem;
       display: flex;
       align-items: center;
@@ -177,10 +177,7 @@ const Container = styled.div`
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
 
-      svg {
-        font-size: 1.5rem;
-        color: white;
-      }
+    
 
       &:hover {
         transform: scale(1.2);
@@ -197,9 +194,7 @@ const Container = styled.div`
 
       .send-btn {
         padding: 0.4rem 0.5rem;
-        svg {
-          font-size: 1.2rem;
-        }
+      
       }
     }
   }

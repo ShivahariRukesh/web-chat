@@ -29,9 +29,16 @@ const Contacts = ({ contacts, changeChat }) => {
     <>
       {currentUserImage && currentUserName && (
         <Container>
-          <div className="brand">
-            <img src={Logo} alt="logo" />
-            <h3>Hellow!</h3>
+          <div className="contacts-header">
+            <h3>
+              Your Contacts
+            </h3>
+            <div className="current-user">
+              <div className="avatar">
+                <img src={currentUserImage} alt="" />
+              </div>
+
+            </div>
           </div>
           <div className="contacts">
             {contacts.map((item, index) => (
@@ -49,14 +56,7 @@ const Contacts = ({ contacts, changeChat }) => {
               </div>
             ))}
           </div>
-          <div className="current-user">
-            <div className="avatar">
-              <img src={currentUserImage} alt="" />
-            </div>
-            <div className="username">
-              <h3>{currentUserName}</h3>
-            </div>
-          </div>
+
         </Container>
       )}
     </>
@@ -74,22 +74,32 @@ const fadeInUp = keyframes`
 const Container = styled.div`
   display: grid;
   grid-template-rows: 10% 75% 15%;
-  overflow: hidden;
-  background-color: #080420;
+  gap: 2rem;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  border-radius : 2%;
+  height:81vh;
+   background: linear-gradient(to bottom, #1a1a1a, #424040);
   animation: ${fadeInUp} 0.6s ease forwards;
 
-  .brand {
+  .contacts-header {
     display: flex;
+    border-bottom : 2px solid white;
+    border-radius : 5%;
     align-items: center;
-    gap: 1rem;
-    justify-content: center;
-    img {
-      height: 2.5rem;
+    justify-content: space-evenly;
+    gap: 2rem;
+
+    .avatar {
       transition: transform 0.3s ease;
       &:hover {
         transform: scale(1.1);
       }
     }
+      img{
+      width : 4rem;
+
+      }
     h3 {
       color: white;
       text-transform: uppercase;
@@ -98,6 +108,7 @@ const Container = styled.div`
 
   .contacts {
     display: flex;
+    padding-top: 1rem;
     flex-direction: column;
     align-items: center;
     overflow-y: auto;
@@ -113,14 +124,16 @@ const Container = styled.div`
     }
 
     .contact {
-      background-color: #1a1a2e;
+      background-color: #363534;
       min-height: 5rem;
       cursor: pointer;
       width: 90%;
       border-radius: 1rem;
       padding: 0.5rem;
+      padding-right : 3rem;
       display: flex;
       align-items: center;
+      justify-content : space-between;
       gap: 1rem;
       transition: all 0.3s ease-in-out;
       opacity: 0;
@@ -139,20 +152,19 @@ const Container = styled.div`
 
       &:hover {
         transform: scale(1.03);
-        background-color: #4e0eff20;
-        box-shadow: 0 0 10px #4e0eff60;
+        background-color: #545352;
+        box-shadow: 0 0 10px white;
       }
     }
 
     .selected {
-      background-color: #4e0eff50;
+      background-color: #adacac;
       transform: scale(1.05);
-      box-shadow: 0 0 15px #4e0eff80;
+      box-shadow: 0 0 15px #cfcdcc;
     }
   }
 
   .current-user {
-    background-color: #0d0d30;
     display: flex;
     justify-content: center;
     align-items: center;

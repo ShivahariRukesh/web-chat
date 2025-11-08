@@ -201,7 +201,7 @@ const FormContainer = styled.div`
     cursor: pointer;
     border: none;
     border-radius: 2rem;
-    background: #6c63ff;
+    background: black;
     color: #fff;
     text-transform: uppercase;
     transition: all 0.3s ease;
